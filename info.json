@@ -1,7 +1,7 @@
 {
 	 "name": "initial-scan",
-	 "version": "0.3.0",
-	 "title": "Initial Scan",
+	 "version": "0.4.0",
+	 "title": "Initial scan",
 	 "author": "trad_emark",
 	 "description": "This mod scans around the starting area when you start a new game",
 	 "factorio_version": "0.17"
