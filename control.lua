@@ -1,62 +1,65 @@
-scan_queue_global = {}
-scan_players_global = {}
 
-function generate_queue(position)
-  local res = {}
-  local xx = position.x
-  local yy = position.y
-  for r = 300, 7, -1 do
-    for y = -r, r, 1 do
-      table.insert(res, {-r * 32 + xx, y * 32 + yy})
-    end
-    for x = -r, r, 1 do
-      table.insert(res, {x * 32 + xx, r * 32 + yy})
-    end
-    for y = r, -r, -1 do
-      table.insert(res, {r * 32 + xx, y * 32 + yy})
-    end
-    for x = r, -r, -1 do
-      table.insert(res, {x * 32 + xx, -r * 32 + yy})
-    end
-  end
-  return res
+if not global.scan then
+	global.scan = {}
 end
 
-function initialize_scan(index, player)
-  local scan = {}
-  scan.force = player.force
-  scan.surface = player.surface
-  scan.queue = generate_queue(player.position)
-  scan_queue_global[index] = scan
+function scan_offset(step)
+	local mx = settings.global["initial-scan-radius"].value
+	local r = 7
+	local a = 0
+	while r < mx do
+		local b = a + r * 8
+		if b >= step then
+			local c = step - a
+			local s = math.floor(c / (r * 2))
+			c = c - s * r * 2
+			if s == 0 then
+				return { c - r, r }
+			end
+			if s == 1 then
+				return { r, r - c }
+			end
+			if s == 2 then
+				return { r - c, -r }
+			end
+			if s == 3 then
+				return { -r, c - r }
+			end
+		end
+		a = b
+		r = r + 1
+	end
+	return nil
 end
 
-function perform_scan()
-  for index, scan in pairs(scan_queue_global) do
-    if #scan.queue == 0 then
-      local player = game.players[index]
-      if player ~= nil then
-        player.print("Initial map scan done")
-      end
-      table.remove(scan_queue_global, index)
-    else
-      local h = scan.queue[#scan.queue]
-      table.remove(scan.queue)
-      scan.force.chart(scan.surface, {h, h})
-    end
-  end
+function perform_scan(index, data)
+	local player = game.players[index]
+	local off = scan_offset(data.step)
+	if not off or not player then
+		global.scan[index] = nil
+		return
+	end
+	local pos = {
+		data.pos[1] + off[1] * 32,
+		data.pos[2] + off[2] * 32,
+	}
+	player.force.chart(player.surface, { pos, pos })
+	global.scan[index].step = data.step + 1
 end
 
 script.on_event(defines.events.on_player_created, function(event)
-  scan_players_global[event.player_index] = game.players[event.player_index]
+	local data = {}
+	data.step = 0
+	local player = game.players[event.player_index]
+	data.pos = { player.position.x, player.position.y }
+	global.scan[event.player_index] = data
 end)
 
 script.on_event(defines.events.on_tick, function(event)
-  if game.tick % 5 == 2 then
-    for index, player in pairs(scan_players_global) do
-      initialize_scan(index, player)
-    end
-    scan_players_global = {}
-    perform_scan()
-  end
+	if (game.tick + 42) % settings.global["initial-scan-period"].value == 0 then
+		for index, data in pairs(global.scan) do
+			perform_scan(index, data)
+		end
+	end
 end)
 
