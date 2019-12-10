@@ -40,10 +40,10 @@ function perform_scan(index, data)
 		return
 	end
 	local pos = {
-		data.pos[1] + off[1] * 32,
-		data.pos[2] + off[2] * 32,
+		data.center[1] + off[1] * 32,
+		data.center[2] + off[2] * 32,
 	}
-	player.force.chart(player.surface, { pos, pos })
+	data.force.chart(data.surface, { pos, pos })
 	global.scan[index].step = data.step + 1
 end
 
@@ -51,7 +51,9 @@ script.on_event(defines.events.on_player_created, function(event)
 	local data = {}
 	data.step = 0
 	local player = game.players[event.player_index]
-	data.pos = { player.position.x, player.position.y }
+	data.center = { player.position.x, player.position.y }
+	data.surface = player.surface
+	data.force = player.force
 	global.scan[event.player_index] = data
 end)
 
