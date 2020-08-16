@@ -1,8 +1,8 @@
 {
 	"name": "initial-scan",
-	"version": "18.0.0",
+	"version": "1.0.1",
 	"title": "Initial scan",
 	"author": "trad_emark",
 	"description": "This mod does a large radar scan around every new player",
-	"factorio_version": "0.18"
+	"factorio_version": "1.0"
 }
