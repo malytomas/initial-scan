@@ -5,7 +5,7 @@ end
 
 function scan_offset(step)
 	local mx = settings.global["initial-scan-radius"].value
-	local r = 6
+	local r = 5
 	local a = 0
 	while r < mx do
 		local b = a + r * 8
