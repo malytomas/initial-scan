@@ -1,4 +1,7 @@
 
+if not global then
+	global = {}
+end
 if not global.scan then
 	global.scan = {}
 end
