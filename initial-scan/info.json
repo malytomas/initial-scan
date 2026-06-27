@@ -1,8 +1,8 @@
 {
 	"author": "trad_emark",
 	"description": "This mod does a large radar scan around every new player",
-	"factorio_version": "2.0",
+	"factorio_version": "2.1",
 	"name": "initial-scan",
 	"title": "Initial scan",
-	"version": "2.0.0"
+	"version": "2.1.0"
 }
